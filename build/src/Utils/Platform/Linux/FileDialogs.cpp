@@ -1,16 +1,12 @@
 #include "zxpch.h"
-
+#ifdef ZX_LINUX
 #include "Utils/FileDialogs.h"
-#include "Application.h"
-
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 
 namespace FileDialogs
 {
-    std::string openf(std::string filter) {
+    std::string openf(std::string filter, std::string flags) {
         //cant use filter yet so just ignore it for now
-        std::string cmd = "zenity --file-selection";
+        std::string cmd = "zenity " + flags;
         FILE* pipe = popen(cmd.c_str(), "r"); // open a pipe with zenity
         if (!pipe) return "ERROR"; // if failed then return "ERROR"
         char buffer[912]; // buffer to hold data
@@ -46,14 +42,15 @@ namespace FileDialogs
     }
 	std::string OpenFile(const char* filter)
 	{
-		std::string file_location = openf(filter);
+		std::string file_location = openf(filter, "--file-selection");
         return file_location;
 	}
 	
 	std::string SaveFileAs(const char* filter)
 	{
-		std::string file_location = openf(filter);
+		std::string file_location = openf(filter, "--file-selection --save --confirm-overwrite");
         return file_location;
 	}
 
 }
+#endif

@@ -24,9 +24,9 @@ ifeq ($(config),debug)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++17
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ThirdParty/Glad/bin/Debug-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Debug-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Debug-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Debug-linux-x86_64/Yaml-cpp/libYaml-cpp.a -lopengl32.lib
+  LIBS += ThirdParty/Glad/bin/Debug-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Debug-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Debug-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Debug-linux-x86_64/Yaml-cpp/libYaml-cpp.a -ldl
   LDDEPS += ThirdParty/Glad/bin/Debug-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Debug-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Debug-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Debug-linux-x86_64/Yaml-cpp/libYaml-cpp.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -pthread
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -53,9 +53,9 @@ ifeq ($(config),release)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++17
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ThirdParty/Glad/bin/Release-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Release-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Release-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Release-linux-x86_64/Yaml-cpp/libYaml-cpp.a -lopengl32.lib
+  LIBS += ThirdParty/Glad/bin/Release-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Release-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Release-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Release-linux-x86_64/Yaml-cpp/libYaml-cpp.a -ldl
   LDDEPS += ThirdParty/Glad/bin/Release-linux-x86_64/Glad/libGlad.a ThirdParty/GLFW/bin/Release-linux-x86_64/GLFW/libGLFW.a ThirdParty/ImGui/bin/Release-linux-x86_64/ImGui/libImGui.a ThirdParty/YAML/bin/Release-linux-x86_64/Yaml-cpp/libYaml-cpp.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s -pthread
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -75,8 +75,8 @@ OBJECTS := \
 	$(OBJDIR)/Panels.o \
 	$(OBJDIR)/Renderer.o \
 	$(OBJDIR)/Input.o \
-	$(OBJDIR)/FileDialog.o \
 	$(OBJDIR)/FileDialogs.o \
+	$(OBJDIR)/FileDialogs1.o \
 	$(OBJDIR)/Shader.o \
 	$(OBJDIR)/Window.o \
 	$(OBJDIR)/main.o \
@@ -157,10 +157,10 @@ $(OBJDIR)/Renderer.o: src/Renderer.cpp
 $(OBJDIR)/Input.o: src/Utils/Input.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/FileDialog.o: src/Utils/Platform/Linux/FileDialog.cpp
+$(OBJDIR)/FileDialogs.o: src/Utils/Platform/Linux/FileDialogs.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/FileDialogs.o: src/Utils/Platform/Windows/FileDialogs.cpp
+$(OBJDIR)/FileDialogs1.o: src/Utils/Platform/Windows/FileDialogs.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Shader.o: src/Utils/Shader.cpp

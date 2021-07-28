@@ -45,7 +45,7 @@ workspace "zxShaderViz"
       "%{ExtLibs.Yaml}"
     }
 
-    links { "Glad", "GLFW", "ImGui", "Yaml-cpp", "opengl32.lib" }
+    links { "Glad", "GLFW", "ImGui", "Yaml-cpp"}
 
     pchheader "zxpch.h"
     pchsource "build/src/zxpch.cpp"
@@ -54,12 +54,15 @@ workspace "zxShaderViz"
       staticruntime "On"
       systemversion "latest"
       system "windows"
+      links {"opengl32.lib"}
 
       defines { "ZX_WIN" }
     
     filter "system:linux"
       staticruntime "On"
       system "linux"
+      links {"dl"}
+      linkoptions "-pthread"
       defines {"ZX_LINUX"}
 
     filter { "configurations:Debug" }
