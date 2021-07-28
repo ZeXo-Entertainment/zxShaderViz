@@ -1,6 +1,6 @@
 #include "zxpch.h"
 
-#include <Yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "Application.h"
 #include "FrameBuffer.h"

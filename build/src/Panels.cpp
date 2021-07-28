@@ -8,6 +8,7 @@
 #include "Utils/Input.h"
 #include "Utils/FileDialogs.h"
 
+
 void TextCentered(const std::string& text)
 {
 	auto& io = ImGui::GetIO();
@@ -95,7 +96,7 @@ void ShaderEditorPanel::DrawUI()
 				{
 		 			std::string* str = (std::string*)data->UserData;
 					IM_ASSERT(data->Buf == str->c_str());
-					str->resize((size_t)data->BufTextLen + 1ui64);
+					str->resize((size_t)data->BufTextLen + 1);
 					data->Buf = (char*)str->c_str();
 				}
 
@@ -147,7 +148,7 @@ void MenuBarPanel::DrawUI()
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
 	auto& applicationInstance = Application::Get();
-	auto& rendererInstance = Renderer::GetRenderer();
+	const auto& rendererInstance = Renderer::GetRenderer();
 	
 	auto activeShader = rendererInstance->GetShader();
 
@@ -299,7 +300,7 @@ void MenuBarPanel::OnEvent(Event& e)
 		bool alt = Input::GetKeyPress(Key::LeftAlt) || Input::GetKeyPress(Key::RightAlt);
 
 		auto& applicationInstance = Application::Get();
-		auto& rendererInstance = Renderer::GetRenderer();
+		const auto& rendererInstance = Renderer::GetRenderer();
 
 		auto shaderEditorPanel = GetPanel<ShaderEditorPanel>("Shader Editor");
 

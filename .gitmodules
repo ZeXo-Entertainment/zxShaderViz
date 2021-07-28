@@ -1,12 +1,13 @@
-[submodule "build/ThirdParty/glm"]
-	path = build/ThirdParty/glm
-	url = https://www.github.com/g-truc/glm
-[submodule "build/ThirdParty/ImGui"]
-	path = build/ThirdParty/ImGui
-	url = https://github.com/Ciridev/imgui
+[submodule "build/ThirdParty/GLFW"]
+	path = build/ThirdParty/GLFW
+	url = https://github.com/Ciridev/glfw.git
 [submodule "build/ThirdParty/YAML"]
 	path = build/ThirdParty/YAML
 	url = https://github.com/Ciridev/Yaml-cpp
-[submodule "build/ThirdParty/GLFW"]
-	path = build/ThirdParty/GLFW
-	url = https://github.com/Ciridev/GLFW
+[submodule "build/ThirdParty/glm"]
+	path = build/ThirdParty/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "build/ThirdParty/ImGui"]
+	path = build/ThirdParty/ImGui
+	url = https://github.com/Ciridev/imgui.git
+	branch = docking

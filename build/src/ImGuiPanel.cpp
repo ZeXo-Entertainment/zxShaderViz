@@ -57,8 +57,8 @@ void ImGuiPanel::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	
-	io.Fonts->AddFontFromFileTTF("assets/font/OpenSans/OpenSans-regular.ttf", 20.0f);
-	io.Fonts->AddFontFromFileTTF("assets/font/OpenSans/OpenSans-regular.ttf", 34.0f);
+	io.Fonts->AddFontFromFileTTF("assets/font/OpenSans/OpenSans-Regular.ttf", 20.0f);
+	io.Fonts->AddFontFromFileTTF("assets/font/OpenSans/OpenSans-Regular.ttf", 34.0f);
 	io.Fonts->AddFontFromFileTTF("assets/font/FiraCode/FiraCode-Retina.ttf", 18.0f);
 	io.Fonts->AddFontFromFileTTF("assets/font/Lato/Lato-Regular.ttf", 18.0f);
 

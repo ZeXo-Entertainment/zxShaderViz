@@ -56,6 +56,11 @@ workspace "zxShaderViz"
       system "windows"
 
       defines { "ZX_WIN" }
+    
+    filter "system:linux"
+      staticruntime "On"
+      system "linux"
+      defines {"ZX_LINUX"}
 
     filter { "configurations:Debug" }
       defines { "DEBUG" }
@@ -66,3 +71,4 @@ workspace "zxShaderViz"
       defines { "ZX_RELEASE", "NDEBUG" }
       optimize "On"
       kind "WindowedApp"
+
