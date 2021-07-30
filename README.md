@@ -1,6 +1,6 @@
 # zxShaderViz
 
-![zxShaderViz Showcase](https://github.com/Ciridev/ShaderPlayground/blob/master/Screenshots/Showcase.png)
+![zxShaderViz Showcase](https://github.com/ZeXo-Entertainment/zxShaderViz/blob/master/Screenshots/Showcase.png)
 
 ## About
 zxShaderViz is a useful tool made by our team, which aims to help learning about shader development. Currently zxShaderViz is still under development. However, we have released an Alpha Version to let you test the product and give us your precious feedback. Many features are yet to come, but the essential is in there. We will keep updating the software to implement all the ideas we have in mind. 
@@ -15,10 +15,9 @@ zxShaderViz is a useful tool made by our team, which aims to help learning about
 Developer | GitHub | Platform  | Version 
 ------------ | ------------ | ------------ | ------------
 | Lorenzo Cirillo | [@Ciridev](https://www.github.com/Ciridev) | Windows | Alpha Release v1.0.0 |
-### Coming Soon
-  Developer| GitHub| Platform 
- ------------ | ---------- | ------------ 
- Giancamillo Alessandroni |  [@NotManyIdeasDev](https://www.github.com/NotManyIdeasDev) | Windows 
+| Giancamillo Alessandroni |  [@NotManyIdeasDev](https://www.github.com/NotManyIdeasDev) | Windows | Alpha Release v1.1.0
+| Anthony Sterling-Palmari | [@meep-m0rp](https://github.com/meep-m0rp) | Linux(OpenSUSE Tumbleweed) | Alpha Release v1.1.0
+ 
 ###### We are looking for developers! [Join us!](https://github.com/ZeXo-Entertainment/Join-Us)
 
 
@@ -28,14 +27,14 @@ Developer | GitHub | Platform  | Version
 
   Platform | Release  
  ------------ | ------------ 
- Windows  | [Download v1.0.0 Alpha](https://github.com/ZeXo-Entertainment/zxShaderViz/releases/tag/v1.0.0a) 
- Windows  | [Source Code](https://github.com/ZeXo-Entertainment/zxShaderViz/releases/tag/v1.0.0a) 
+ Windows  | Download v1.0.0 Alpha 
+ Windows  | Source Code 
 
 
 ### ...or compile yourself the project!
 Using Visual Studio 2019 is recommended, you will need [Premake](https://premake.github.io/) to generate the solution files needed.
 1. Start by cloning the repository with the following command: 
-`git clone --recurive https://github.com/ZeXo-Entertainment/zxShaderViz`. 
+`git clone --recursive https://github.com/ZeXo-Entertainment/zxShaderViz`. 
 Or if you cloned the repository non-recusively, you can use this command:
 `git submodule update --init` to add all the dependencies.
 
