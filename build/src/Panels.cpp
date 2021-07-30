@@ -294,8 +294,8 @@ void MenuBarPanel::OnEvent(Event& e)
 
 		Key keycode = (Key)e.GetKeyCode();
 
-		bool shift = Input::GetKeyPress(Key::LeftShift) || Input::GetKeyPress(Key::RightShift);
 		bool control = Input::GetKeyPress(Key::LeftControl) || Input::GetKeyPress(Key::RightControl);
+		bool shift = Input::GetKeyPress(Key::LeftShift) || Input::GetKeyPress(Key::RightShift);
 		bool alt = Input::GetKeyPress(Key::LeftAlt) || Input::GetKeyPress(Key::RightAlt);
 
 		auto& applicationInstance = Application::Get();
@@ -357,11 +357,11 @@ void MenuBarPanel::OnEvent(Event& e)
 			}
 			break;
 
-		case Key::C:
-			if (shift)
+		case Key::W:
+			if (control)
 			{
 				auto updateChangesPanel = GetPanel<UpdateChangesPanel>("Update Changes");
-	
+
 				if (shaderEditorPanel->IsSaved())
 					applicationInstance.CloseFile();
 				else
@@ -607,7 +607,7 @@ void AboutPanel::DrawUI()
 	if (ImGui::BeginPopupModal("About", &m_Active, m_WindowFlags))
 	{
 		ImGui::SetWindowSize({ 400, 200 });
-		ImGui::TextWrapped("zxShaderViz - v1.0.0 Alpha Release\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev");
+		ImGui::TextWrapped("zxShaderViz - v1.0.0 Alpha Release\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev\nNotManyIdeasDev\nmeepu-m0rpu");
 
 		ImGui::EndPopup();
 	}
