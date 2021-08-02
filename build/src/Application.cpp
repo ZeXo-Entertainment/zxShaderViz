@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "FrameBuffer.h"
 #include "Utils/TimeStep.h"
+#include "Utils/FileDialogs.h"
 
 template<typename T>
 T* GetPanel(const std::string& name)
@@ -39,49 +40,6 @@ Application* Application::s_Instance = nullptr;
 Application::Application()
 {
 	s_Instance = this;
-	WindowSettings windowSettings;
-
-	if (std::filesystem::exists("config.cfg"))
-	{
-		windowSettings = InitializeSettings("config.cfg");
-	}
-	else
-	{
-		windowSettings = InitializeSettings();
-		WriteToConfigFile();
-	}
-
-	m_Window = std::make_shared<Window>(windowSettings);
-	m_Window->SetEventCallbackProcedure(BIND_FUNCTION(&Application::OnEvent, this));
-	m_ImGuiFrame = std::make_unique<ImGuiPanel>();
-	m_Renderer = Renderer::GetRenderer();
-	m_Minimized = (m_Window->GetWidth() == 0 && m_Window->GetHeight() == 0);
-	m_Running = m_Window->IsActive();
-
-	auto editorPreferences  = new EditorPreferencesPanel("Editor Preferences");
-	auto updateChanges		= new UpdateChangesPanel("Update Changes");
-	auto shaderEditor		= new ShaderEditorPanel("Shader Editor");
-	auto viewport			= new ViewportPanel("Viewport");
-	auto menuBar			= new MenuBarPanel("Menu Bar");
-	auto logPanel			= new LogPanel("Log Panel");
-	auto aboutPanel			= new AboutPanel("About");
-
-	m_PanelsContainer[menuBar->GetName()] = menuBar;
-	m_PanelsContainer[editorPreferences->GetName()] = editorPreferences;
-	m_PanelsContainer[updateChanges->GetName()] = updateChanges;
-	m_PanelsContainer[shaderEditor->GetName()] = shaderEditor;
-	m_PanelsContainer[viewport->GetName()] = viewport;
-	m_PanelsContainer[logPanel->GetName()] = logPanel;
-	m_PanelsContainer[aboutPanel->GetName()] = aboutPanel;
-
-	if (m_Settings->autoSaving)
-	{
-		if (std::filesystem::exists(m_Settings->tempFilepath == "" ? "tempFile.tmp" : m_Settings->tempFilepath))
-		{
-			auto restoreFile = new RestoreFilePanel("Restore File");
-			m_PanelsContainer[restoreFile->GetName()] = restoreFile;
-		}
-	}
 }
 
 void Application::RenderLoop()
@@ -295,6 +253,58 @@ bool Application::OnWindowResized(WindowResized& e)
 	return true;
 }
 
+bool Application::Init()
+{
+	s_Instance = this;
+	WindowSettings windowSettings;
+
+	if (std::filesystem::exists("config.cfg"))
+	{
+		windowSettings = InitializeSettings("config.cfg");
+	}
+	else
+	{
+		windowSettings = InitializeSettings();
+		WriteToConfigFile();
+	}
+
+	if (OpenSelectionWindow() == -1) return false;
+
+	m_Window = std::make_shared<Window>(windowSettings);
+	m_Window->SetEventCallbackProcedure(BIND_FUNCTION(&Application::OnEvent, this));
+	m_ImGuiFrame = std::make_unique<ImGuiPanel>(m_Window);
+	m_Renderer = Renderer::GetRenderer();
+	m_Minimized = (m_Window->GetWidth() == 0 && m_Window->GetHeight() == 0);
+	m_Running = m_Window->IsActive();
+
+	auto editorPreferences = new EditorPreferencesPanel("Editor Preferences");
+	auto updateChanges = new UpdateChangesPanel("Update Changes");
+	auto shaderEditor = new ShaderEditorPanel("Shader Editor");
+	auto viewport = new ViewportPanel("Viewport");
+	auto menuBar = new MenuBarPanel("Menu Bar");
+	auto logPanel = new LogPanel("Log Panel");
+	auto aboutPanel = new AboutPanel("About");
+
+	m_PanelsContainer[menuBar->GetName()] = menuBar;
+	m_PanelsContainer[editorPreferences->GetName()] = editorPreferences;
+	m_PanelsContainer[updateChanges->GetName()] = updateChanges;
+	m_PanelsContainer[shaderEditor->GetName()] = shaderEditor;
+	m_PanelsContainer[viewport->GetName()] = viewport;
+	m_PanelsContainer[logPanel->GetName()] = logPanel;
+	m_PanelsContainer[aboutPanel->GetName()] = aboutPanel;
+
+	if (m_Settings->autoSaving)
+	{
+		if (std::filesystem::exists(m_Settings->tempFilepath == "" ? "tempFile.tmp" : m_Settings->tempFilepath))
+		{
+			auto restoreFile = new RestoreFilePanel("Restore File");
+			m_PanelsContainer[restoreFile->GetName()] = restoreFile;
+		}
+	}
+
+	return true;
+}
+
 WindowSettings Application::InitializeSettings(const std::string& filename)
 {
 	m_Settings = std::make_shared<EngineSettings>();
@@ -375,13 +385,62 @@ WindowSettings Application::InitializeSettings(const std::string& filename)
 	return windowSettings;
 }
 
+int Application::OpenSelectionWindow()
+{
+	static bool windowRunning = true;
+
+	auto window = std::shared_ptr<Window>(new Window({700, 500, 200, 200, RefreshRate::Free}));
+	window->SetWindowLimits(700.0f, 500.0f, 700.0f, 500.0f);
+	window->SetEventCallbackProcedure([](Event& e) -> void {
+		EventDispatcher dispatcher(e);
+		dispatcher.Emit<WindowClosed>([](WindowClosed& e) -> bool {
+			windowRunning = false;
+			return true;
+		});
+	});
+
+	ImGuiPanel* IGPanel = new ImGuiPanel(window);
+	DemoPanel* demo = new DemoPanel("");
+	SolutionWizardPanel* wizard = new SolutionWizardPanel("Wizard");
+
+	while (windowRunning)
+	{
+		window->Update();
+		if (!window->IsActive()) continue;
+		window->Clear();
+
+		IGPanel->Begin();
+		demo->DrawUI();  
+		wizard->DrawUI();
+		IGPanel->End();
+
+		switch (wizard->GetSelectedMode())
+		{
+		case 0: 
+			windowRunning = false;
+			break;
+		case 1:
+			break;
+		case 2: 
+			OpenSolution(FileDialogs::OpenFile("ZeXo Solution File (*.zxsln)\0 * .zxsln\0", window));
+			windowRunning = false;
+			break;
+		}
+	}
+
+	IGPanel->Finalize();
+	window->Close();
+
+	return wizard->GetSelectedMode();
+}
+
 void Application::WriteToConfigFile()
 {
 	YAML::Emitter emitter;
 
 	// Config
 	{
-		emitter << YAML::Comment("zxShaderViz - v1.0.0 Alpha");
+		emitter << YAML::Comment("zxShaderViz - v1.1.0 Alpha");
 		emitter << YAML::BeginMap;
 
 		// Engine settings
@@ -458,4 +517,55 @@ void Application::WriteToConfigFile()
 	std::fstream file("config.cfg", std::fstream::in | std::fstream::out | std::fstream::trunc);
 	file << emitter.c_str();
 	file.close();
+}
+
+void Application::OpenSolution(const std::string& filepath)
+{
+	std::fstream solutionFile(filepath);
+	if (!solutionFile) return;
+	std::stringstream fileData;
+	fileData << solutionFile.rdbuf();
+	solutionFile.close();
+
+	YAML::Node nodes = YAML::Load(fileData.str());
+	auto solutionNode = nodes["Solution"];
+	if (!solutionNode) return;
+
+	auto shadersNode = solutionNode["Shaders"];
+	auto texturesNode = solutionNode["Textures"];
+	if (!shadersNode || !texturesNode) return;
+
+	unsigned int shadersCount = shadersNode.size();
+	unsigned int texturesCount = texturesNode.size();
+
+	m_ActiveSolution = std::make_shared<Solution>();
+	m_ActiveSolution->filepath = filepath;
+
+	for (unsigned int i = 0; i < shadersCount; i++)
+	{
+		try
+		{
+			m_ActiveSolution->shaderFiles.push_back(shadersNode[i].as<std::string>());
+		}
+		catch (...)
+		{
+			return;
+		}
+	}
+
+	for (unsigned int i = 0; i < texturesCount; i++)
+	{
+		try
+		{
+			m_ActiveSolution->textureFiles.push_back(texturesNode[i].as<std::string>());
+			// Load textures raw data. 
+		}
+		catch (...)
+		{
+			return;
+		}
+	}
+
+	// open files and textures. 
+	return;
 }

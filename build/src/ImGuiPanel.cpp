@@ -7,7 +7,7 @@
 
 #include <GLFW/glfw3.h>
 
-ImGuiPanel::ImGuiPanel()
+ImGuiPanel::ImGuiPanel(std::shared_ptr<Window> window) : m_Window(window)
 {
 	Init();
 }
@@ -23,8 +23,8 @@ void ImGuiPanel::End()
 {
 	ImGuiIO& io = ImGui::GetIO();
 	
-	float x = static_cast<float>(Application::Get().GetWindow()->GetWidth());
-	float y = static_cast<float>(Application::Get().GetWindow()->GetHeight());
+	float x = static_cast<float>(m_Window->GetWidth());
+	float y = static_cast<float>(m_Window->GetHeight());
 
 	io.DisplaySize = ImVec2(x, y);
 
@@ -72,7 +72,7 @@ void ImGuiPanel::Init()
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	ImGui_ImplGlfw_InitForOpenGL(application.GetWindow()->GetNativeWindow(), true);
+	ImGui_ImplGlfw_InitForOpenGL(m_Window->GetNativeWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 

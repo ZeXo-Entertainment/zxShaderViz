@@ -9,7 +9,10 @@
 int main()
 {
 	auto& engine = Application::Get();
-	engine.RenderLoop();
+	if (engine.Init())
+	{
+		engine.RenderLoop();
+	}
 
 	return 0;
 }

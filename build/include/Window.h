@@ -58,6 +58,8 @@ public:
 	void SetRefreshRate(RefreshRate rrate);
 	void SetTitle(std::string title);
 
+	void SetWindowLimits(float minX = -1, float minY = -1, float maxX = -1, float maxY = -1) const;
+
 	void SetEventCallbackProcedure(const EventProcedure& eventProcedure);
 
 	void Update();

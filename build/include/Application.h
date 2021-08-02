@@ -5,6 +5,7 @@
 #include "Events/MouseEvents.h"
 #include "Events/WindowEvents.h"
 
+#include "Solution.h"
 #include "Renderer.h"
 #include "Window.h"
 
@@ -51,12 +52,14 @@ public:
 	void CloseFile();
 	void RestoreFile();
 
+	void OpenSolution(const std::string& filepath);
 	void WriteToTempFile(const std::string& src);
 
 	void LogMessage(Severity severity, std::string msg);
 
 	void ChangeEditorTheme(int theme);
 
+	bool Init();  
 	void Close();
 
 private: 
@@ -66,6 +69,7 @@ private:
 	bool OnWindowResized(WindowResized&);
 
 	WindowSettings InitializeSettings(const std::string& filename = "");
+	int OpenSelectionWindow();
 	void WriteToConfigFile();
 
 	std::shared_ptr<Window> m_Window;
@@ -77,6 +81,7 @@ private:
 	std::unordered_map<std::string, UIPanel*> m_PanelsContainer;
 
 	std::shared_ptr<EngineSettings> m_Settings;
+	std::shared_ptr<Solution> m_ActiveSolution;
 
 	bool m_Minimized;
 	bool m_Running;

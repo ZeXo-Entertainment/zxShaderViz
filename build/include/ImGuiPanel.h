@@ -4,10 +4,12 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
+#include "Window.h"
+
 class ImGuiPanel
 {
 public: 
-	ImGuiPanel();
+	ImGuiPanel(std::shared_ptr<Window> window);
 
 	void Begin();
 	void End();
@@ -17,7 +19,9 @@ public:
 
 	void ChangeTheme(int theme);
 
-protected:
+private:
 	void Init();
+	
+	std::shared_ptr<Window> m_Window;
 };
 

@@ -177,3 +177,24 @@ public:
 	virtual void OnEvent(Event& e) {}
 
 };
+
+class SolutionWizardPanel : public UIPanel
+{
+public: 
+	SolutionWizardPanel(const std::string& name) : UIPanel(name)
+	{
+		m_WindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		m_WindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		m_WindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		m_Mode = -1;
+	}
+
+	int GetSelectedMode() const { return m_Mode; }
+
+	virtual void DrawUI() override; 
+	virtual void OnEvent(Event& e) {}
+
+private:
+	int m_Mode;
+};

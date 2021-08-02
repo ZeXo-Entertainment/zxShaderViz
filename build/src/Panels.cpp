@@ -21,7 +21,7 @@ void TextCentered(const std::string& text)
 
 	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
 	ImGui::SetCursorPosY((windowHeight - textHeight) * 0.5f);
-	ImGui::TextWrapped(text.c_str());
+	ImGui::Button(text.c_str());
 
 	ImGui::PopFont();
 }
@@ -325,7 +325,7 @@ void MenuBarPanel::OnEvent(Event& e)
 			break;
 		case Key::O:
 			if (control)
-				applicationInstance.OpenFile(FileDialogs::OpenFile("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader(*.fragment)\0 * .fragment\0"));
+				applicationInstance.OpenFile(FileDialogs::OpenFile("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader (*.fragment)\0 * .fragment\0"));
 			break;
 		case Key::S:
 			if (control && alt)
@@ -333,7 +333,7 @@ void MenuBarPanel::OnEvent(Event& e)
 				if (rendererInstance->GetShader())
 				{
 					auto fragSrc = shaderEditorPanel->GetFragSource();
-					applicationInstance.SaveFile(fragSrc, FileDialogs::SaveFileAs("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader(*.fragment)\0 * .fragment\0"));
+					applicationInstance.SaveFile(fragSrc, FileDialogs::SaveFileAs("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader (*.fragment)\0 * .fragment\0"));
 				}
 			}
 			else if (control)
@@ -611,4 +611,37 @@ void AboutPanel::DrawUI()
 
 		ImGui::EndPopup();
 	}
+}
+
+void SolutionWizardPanel::DrawUI()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	ImGui::Begin("Wizard", nullptr, m_WindowFlags);
+	ImGui::BeginChild("Wizard Buttons");
+
+	int i = ImGui::GetWindowSize().x;
+	ImGui::SetCursorPosY(80.0f);
+
+	ImGui::Spacing();
+	ImGui::SameLine(i / 2 - 250);
+	if (ImGui::Button("Open zxShaderViz without any solution.", { 500, 100 })) m_Mode = 0;
+	ImGui::Spacing();
+	ImGui::SameLine(i / 2 - 250);
+	if (ImGui::Button("Create a new zxShaderViz solution", { 500, 100 })) m_Mode = 1;
+	ImGui::Spacing();
+	ImGui::SameLine(i / 2 - 250);
+	if (ImGui::Button("Open an existing zxShaderViz solution", { 500, 100 })) m_Mode = 2;
+
+	ImGui::EndChild();
+	ImGui::End();
+
+	ImGui::PopStyleVar(3);
 }

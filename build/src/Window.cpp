@@ -31,6 +31,7 @@ void Window::Clear()
 
 void Window::Close()
 {
+	glfwDestroyWindow(m_Window);
 	glfwTerminate();
 	s_glfwInit = false;
 	m_Data.m_IsActive = false;
@@ -58,6 +59,11 @@ void Window::SetTitle(std::string title)
 {
 	m_Data.m_Title = title;
 	glfwSetWindowTitle(m_Window, m_Data.m_Title.c_str());
+}
+
+void Window::SetWindowLimits(float minX, float minY, float maxX , float maxY) const
+{
+	glfwSetWindowSizeLimits(m_Window, minX, minY, maxX, maxY);
 }
 
 void Window::Init(WindowSettings settings)

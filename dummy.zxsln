@@ -1,0 +1,12 @@
+# zxShaderViz - v1.1.0 Alpha
+Solution: 
+  Shaders:
+    - "path to shader 1"
+    - "path to shader 2"
+    - "path to shader 3"
+  Textures:
+    - "path to texture 1"
+    - "path to texture 2"
+    - "path to texture 3"
+
+    
