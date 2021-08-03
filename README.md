@@ -28,6 +28,7 @@ Developer | GitHub | Platform  | Version
 
   Platform | Release  
  ------------ | ------------ 
+ Windows  | [Download v1.0.1 Alpha](https://github.com/ZeXo-Entertainment/zxShaderViz/releases/tag/v1.0.1a) 
  Windows  | [Download v1.0.0 Alpha](https://github.com/ZeXo-Entertainment/zxShaderViz/releases/tag/v1.0.0a) 
  Windows  | [Source Code](https://github.com/ZeXo-Entertainment/zxShaderViz/releases/tag/v1.0.0a) 
 
