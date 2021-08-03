@@ -381,7 +381,7 @@ void Application::WriteToConfigFile()
 
 	// Config
 	{
-		emitter << YAML::Comment("zxShaderViz - v1.0.0 Alpha");
+		emitter << YAML::Comment("zxShaderViz - v1.0.1 Alpha");
 		emitter << YAML::BeginMap;
 
 		// Engine settings

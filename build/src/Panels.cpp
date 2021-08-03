@@ -469,7 +469,7 @@ void EditorPreferencesPanel::DrawUI()
 				auto file = (settings->tempFilepath == "" ? "<default file>" : settings->tempFilepath.c_str());
 				ImGui::Text("%s", file);
 				if (ImGui::Button("Select a file"))
-					settings->tempFilepath = FileDialogs::OpenFile("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader(*.fragment)\0 * .fragment\0");
+					settings->tempFilepath = FileDialogs::OpenFile("Temporary file (*.tmp)\0 * .tmp");
 				ImGui::SameLine();
 				if (ImGui::Button("Reset"))
 					settings->tempFilepath = "";
@@ -607,7 +607,7 @@ void AboutPanel::DrawUI()
 	if (ImGui::BeginPopupModal("About", &m_Active, m_WindowFlags))
 	{
 		ImGui::SetWindowSize({ 400, 200 });
-		ImGui::TextWrapped("zxShaderViz - v1.0.0 Alpha Release\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev");
+		ImGui::TextWrapped("zxShaderViz - v1.0.1 Alpha Release\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev");
 
 		ImGui::EndPopup();
 	}
