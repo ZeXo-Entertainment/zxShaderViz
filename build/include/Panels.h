@@ -188,13 +188,20 @@ public:
 		m_WindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 		m_Mode = -1;
+		m_Menu = 0;
+
+		m_Selection = { false, false, false };
 	}
 
+	void ChangeMenu(int menu) { m_Menu = menu; }
 	int GetSelectedMode() const { return m_Mode; }
 
 	virtual void DrawUI() override; 
 	virtual void OnEvent(Event& e) {}
 
 private:
+	std::array<bool, 3> m_Selection;
+
 	int m_Mode;
+	int m_Menu;
 };

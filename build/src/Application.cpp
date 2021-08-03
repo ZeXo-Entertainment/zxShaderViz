@@ -420,6 +420,7 @@ int Application::OpenSelectionWindow()
 			windowRunning = false;
 			break;
 		case 1:
+			wizard->ChangeMenu(1);
 			break;
 		case 2: 
 			OpenSolution(FileDialogs::OpenFile("ZeXo Solution File (*.zxsln)\0 * .zxsln\0", window));

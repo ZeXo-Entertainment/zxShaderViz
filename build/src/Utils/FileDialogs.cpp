@@ -10,6 +10,8 @@ namespace FileDialogs
 {
 	std::string OpenFile(const char* filter, std::shared_ptr<Window> wHandle)
 	{
+		
+
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -59,6 +61,33 @@ namespace FileDialogs
 			return ofn.lpstrFile;
 
 		return std::string();
+	}
+
+	std::string BrowseForFolder(std::shared_ptr<Window> wHandle, std::string title, std::string folder)
+	{
+		std::string ret = std::string();
+
+		BROWSEINFOA br;
+		ZeroMemory(&br, sizeof(BROWSEINFOA));
+		br.lpfn = [](HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData) -> int
+		{
+			if (uMsg == BFFM_INITIALIZED) SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+			return 0;
+		};
+
+		br.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+		br.hwndOwner = glfwGetWin32Window((GLFWwindow*)wHandle->GetNativeWindow());
+		br.lpszTitle = title.c_str();
+		br.lParam = (LPARAM)folder.c_str();
+
+		LPITEMIDLIST pidl = NULL;
+		if ((pidl = SHBrowseForFolderA(&br)) != NULL)
+		{
+			char buffer[MAX_PATH];
+			if (SHGetPathFromIDListA(pidl, buffer)) ret = buffer;
+		}
+
+		return ret;
 	}
 
 }

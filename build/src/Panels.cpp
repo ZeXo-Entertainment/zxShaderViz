@@ -7,6 +7,7 @@
 #include "Panels.h"
 #include "Utils/Input.h"
 #include "Utils/FileDialogs.h"
+#include "Utils/Utility.h"
 
 void TextCentered(const std::string& text)
 {
@@ -73,7 +74,7 @@ void ShaderEditorPanel::DrawUI()
 	ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 0.0f);
 
 	ImGui::Begin("Shader Editor", &m_Active, m_WindowFlags);
-	if(m_Filename != "")
+	if (m_Filename != "")
 	{
 		if (m_FragmentSrc == "")
 			if (auto shader = Renderer::GetRenderer()->GetShader())
@@ -87,13 +88,13 @@ void ShaderEditorPanel::DrawUI()
 		ImGui::InputTextMultiline("Fragment",
 			(char*)m_FragmentSrc.c_str(),
 			m_FragmentSrc.capacity() + 1,
-			ImGui::GetWindowSize(), 
-			ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_CallbackResize, 
+			ImGui::GetWindowSize(),
+			ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_CallbackResize,
 			[](ImGuiInputTextCallbackData* data) -> int
 			{
 				if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
 				{
-		 			std::string* str = (std::string*)data->UserData;
+					std::string* str = (std::string*)data->UserData;
 					IM_ASSERT(data->Buf == str->c_str());
 					str->resize((size_t)data->BufTextLen + 1ui64);
 					data->Buf = (char*)str->c_str();
@@ -102,7 +103,7 @@ void ShaderEditorPanel::DrawUI()
 				return 0;
 			},
 			reinterpret_cast<void*>(&m_FragmentSrc)
-		);
+				);
 		ImGui::SetScrollY(ImGui::GetScrollMaxY());
 		ImGui::EndChild();
 
@@ -148,17 +149,17 @@ void MenuBarPanel::DrawUI()
 
 	auto& applicationInstance = Application::Get();
 	auto& rendererInstance = Renderer::GetRenderer();
-	
+
 	auto activeShader = rendererInstance->GetShader();
 
-	auto shaderEditorPanel  = GetPanel<ShaderEditorPanel>("Shader Editor");
+	auto shaderEditorPanel = GetPanel<ShaderEditorPanel>("Shader Editor");
 	auto updateChangesPanel = GetPanel<UpdateChangesPanel>("Update Changes");
-	
+
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if(ImGui::MenuItem("New", "Ctrl+N", nullptr))
+			if (ImGui::MenuItem("New", "Ctrl+N", nullptr))
 			{
 				if (shaderEditorPanel->IsSaved())
 				{
@@ -180,6 +181,11 @@ void MenuBarPanel::DrawUI()
 				{
 					updateChangesPanel->Activate(true, 1);
 				}
+			}
+
+			if (ImGui::MenuItem("Open folder", nullptr, nullptr))
+			{
+				auto pleaseWorkIDontWantToWasteAnInfiniteAmountOfTime = FileDialogs::BrowseForFolder();
 			}
 
 			if (ImGui::MenuItem("Save", "Ctrl+S", nullptr, activeShader || shaderEditorPanel->GetFilename() == "untitled.frag"))
@@ -236,10 +242,10 @@ void MenuBarPanel::DrawUI()
 				auto editorPreferencePanel = GetPanel<EditorPreferencesPanel>("Editor Preferences");
 				editorPreferencePanel->Activate(true);
 			}
-		
+
 			ImGui::EndMenu();
 		}
-		
+
 		if (ImGui::BeginMenu("Shader"))
 		{
 			if (ImGui::MenuItem("Recompile Shader", "Ctrl+F5", nullptr, !applicationInstance.GetSettings()->hotReload && activeShader))
@@ -276,7 +282,7 @@ void MenuBarPanel::DrawUI()
 				auto aboutPanel = GetPanel<AboutPanel>("About");
 				aboutPanel->Activate(true);
 			}
-			
+
 			ImGui::EndMenu();
 		}
 
@@ -316,7 +322,7 @@ void MenuBarPanel::OnEvent(Event& e)
 					}
 					else
 					{
-						
+
 						auto updateChangesPanel = GetPanel<UpdateChangesPanel>("Update Changes");
 						updateChangesPanel->Activate(true, 0);
 					}
@@ -390,7 +396,7 @@ void MenuBarPanel::OnEvent(Event& e)
 		}
 
 		return true;
-	});
+		});
 }
 
 void LogPanel::DrawUI()
@@ -408,7 +414,7 @@ void LogPanel::DrawUI()
 			clipboard << msg;
 			ImGui::PopStyleColor();
 		}
-		
+
 		ImGui::SetClipboardText(clipboard.str().c_str());
 	}
 
@@ -422,7 +428,7 @@ void LogPanel::DrawUI()
 	{
 		ImGui::TextColored(GetColorFromSeverity(it->second), "%s", it->first.c_str());
 	}
-	
+
 	ImGui::PopFont();
 
 	ImGui::End();
@@ -469,7 +475,7 @@ void EditorPreferencesPanel::DrawUI()
 				auto file = (settings->tempFilepath == "" ? "<default file>" : settings->tempFilepath.c_str());
 				ImGui::Text("%s", file);
 				if (ImGui::Button("Select a file"))
-					settings->tempFilepath = FileDialogs::OpenFile("Fragment Shader (*.frag)\0 * .frag\0Fragment Shader(*.fragment)\0 * .fragment\0");
+					settings->tempFilepath = FileDialogs::OpenFile("Temp files (*.tmp)\0 * .tmp\0");
 				ImGui::SameLine();
 				if (ImGui::Button("Reset"))
 					settings->tempFilepath = "";
@@ -509,7 +515,7 @@ void UpdateChangesPanel::DrawUI()
 	if (ImGui::BeginPopupModal("Save changes?", &m_Active, m_WindowFlags))
 	{
 		ImGui::SetWindowSize({ 650, 95 });
-		
+
 		ImGui::TextWrapped("It looks like you haven't saved your file. Would you like to update changes before opening a new file?");
 		ImGui::Separator();
 		if (ImGui::Button("Yes"))
@@ -548,7 +554,7 @@ void UpdateChangesPanel::DrawUI()
 		if (ImGui::Button("No"))
 		{
 			auto& applicationInstance = Application::Get();
-			
+
 			switch (m_Action)
 			{
 			case 0:
@@ -624,24 +630,53 @@ void SolutionWizardPanel::DrawUI()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("Wizard", nullptr, m_WindowFlags);
-	ImGui::BeginChild("Wizard Buttons");
+	switch (m_Menu)
+	{
+	case 0:
+	{
+		ImGui::Begin("Wizard", nullptr, m_WindowFlags);
+		ImGui::BeginChild("Wizard Buttons");
 
-	int i = ImGui::GetWindowSize().x;
-	ImGui::SetCursorPosY(80.0f);
+		int i = ImGui::GetWindowSize().x;
+		ImGui::SetCursorPosY(80.0f);
 
-	ImGui::Spacing();
-	ImGui::SameLine(i / 2 - 250);
-	if (ImGui::Button("Open zxShaderViz without any solution.", { 500, 100 })) m_Mode = 0;
-	ImGui::Spacing();
-	ImGui::SameLine(i / 2 - 250);
-	if (ImGui::Button("Create a new zxShaderViz solution", { 500, 100 })) m_Mode = 1;
-	ImGui::Spacing();
-	ImGui::SameLine(i / 2 - 250);
-	if (ImGui::Button("Open an existing zxShaderViz solution", { 500, 100 })) m_Mode = 2;
+		ImGui::Spacing();
+		ImGui::SameLine(i / 2 - 250);
+		if (ImGui::Button("Open zxShaderViz without any solution.", { 500, 100 })) m_Mode = 0;
+		ImGui::Spacing();
+		ImGui::SameLine(i / 2 - 250);
+		if (ImGui::Button("Create a new zxShaderViz solution", { 500, 100 })) m_Mode = 1;
+		ImGui::Spacing();
+		ImGui::SameLine(i / 2 - 250);
+		if (ImGui::Button("Open an existing zxShaderViz solution", { 500, 100 })) m_Mode = 2;
 
-	ImGui::EndChild();
-	ImGui::End();
+		ImGui::EndChild();
+		ImGui::End();
+		break;
+	}
+	case 1:
+		ImGui::Begin("Selection Wizard", nullptr, m_WindowFlags);
+		ImGui::SetCursorPosX(500 / 4 - 30);
+		ImGui::SetCursorPosY(80.0f);
+		ImGui::BeginChild("Type Selection", { 500, 300 }, true);
+
+		int i = ImGui::GetWindowSize().x;
+		ImGui::SetCursorPosY(7.5f);
+		if (ImGui::Button("Blank Solution", { 500, 85 })) m_Mode = 0;
+		if (ImGui::Button("Shader Tutorial", { 500, 85 })) m_Mode = 1;
+		if (ImGui::Button("Texture Tutorial", { 500, 85 })) m_Mode = 2;
+
+		std::string env = Environment::GetHomePath();
+
+		ImGui::EndChild();
+		ImGui::SetCursorPosX(500 / 4 - 30);
+		ImGui::InputText("##Path", (char*)env.c_str(), env.size(), ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		if(ImGui::Button("...", {38, 26}));
+
+		ImGui::End();
+		break;
+	}
 
 	ImGui::PopStyleVar(3);
 }

@@ -16,4 +16,5 @@
 
 #ifdef ZX_WIN
 	#include <Windows.h>
+	#include <shlobj_core.h>
 #endif
