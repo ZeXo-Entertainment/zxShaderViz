@@ -16,7 +16,7 @@ Developer | GitHub | Platform  | Version
 ------------ | ------------ | ------------ | ------------
 | Lorenzo Cirillo | [@Ciridev](https://www.github.com/Ciridev) | Windows | Alpha Release v1.0.0 |
 | Giancamillo Alessandroni |  [@NotManyIdeasDev](https://www.github.com/NotManyIdeasDev) | Windows | Alpha Release v1.1.0
-| Anthony Sterling-Palmari | [@meep-m0rp](https://github.com/meep-m0rp) | Linux(OpenSUSE Tumbleweed) | Alpha Release v1.1.0
+| Anthony Sterling-Palmari | [@meep-m0rp](https://github.com/meep-m0rp) | Linux (Arch) | Alpha Release v1.1.0
  
 ###### We are looking for developers! [Join us!](https://github.com/ZeXo-Entertainment/Join-Us)
 
