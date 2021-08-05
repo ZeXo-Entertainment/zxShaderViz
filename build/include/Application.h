@@ -42,7 +42,7 @@ public:
 
 	static Application& Get();
 
-	std::shared_ptr<Window> GetWindow() const { return m_Window; }
+	std::shared_ptr<Window> GetActiveWindow() const { return m_ActiveWindow; }
 	std::shared_ptr<EngineSettings> GetSettings() const { return m_Settings; }
 	std::unordered_map<std::string, UIPanel*> GetPanels() const { return m_PanelsContainer; }
 
@@ -72,7 +72,7 @@ private:
 	int OpenSelectionWindow();
 	void WriteToConfigFile();
 
-	std::shared_ptr<Window> m_Window;
+	std::shared_ptr<Window> m_ActiveWindow;
 	std::shared_ptr<Renderer> m_Renderer;
 	std::unique_ptr<ImGuiPanel> m_ImGuiFrame;
 

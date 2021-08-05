@@ -4,8 +4,8 @@
 
 namespace FileDialogs
 {
-	std::string OpenFile(const char* filter, std::shared_ptr<Window> wHandle = Application::Get().GetWindow());
-	std::string SaveFileAs(const char* filter, std::shared_ptr<Window> wHandle = Application::Get().GetWindow());
+	std::string OpenFile(const char* filter);
+	std::string SaveFileAs(const char* filter);
 
-	std::string BrowseForFolder(std::shared_ptr<Window> wHandle = Application::Get().GetWindow(), std::string title = "Select a folder", std::string folder = "C:\\");
+	std::string BrowseForFolder(std::string title = "Select a folder", std::string folder = "C:\\");
 }

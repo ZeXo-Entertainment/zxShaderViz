@@ -8,9 +8,9 @@
 
 namespace FileDialogs
 {
-	std::string OpenFile(const char* filter, std::shared_ptr<Window> wHandle)
+	std::string OpenFile(const char* filter)
 	{
-		
+		std::shared_ptr<Window> wHandle = Application::Get().GetActiveWindow();
 
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -35,8 +35,10 @@ namespace FileDialogs
 		return std::string();
 	}
 	
-	std::string SaveFileAs(const char* filter, std::shared_ptr<Window> wHandle)
+	std::string SaveFileAs(const char* filter)
 	{
+		std::shared_ptr<Window> wHandle = Application::Get().GetActiveWindow();
+
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -63,8 +65,9 @@ namespace FileDialogs
 		return std::string();
 	}
 
-	std::string BrowseForFolder(std::shared_ptr<Window> wHandle, std::string title, std::string folder)
+	std::string BrowseForFolder(std::string title, std::string folder)
 	{
+		std::shared_ptr<Window> wHandle = Application::Get().GetActiveWindow();
 		std::string ret = std::string();
 
 		BROWSEINFOA br;

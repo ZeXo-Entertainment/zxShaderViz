@@ -5,7 +5,7 @@
 
 FrameBuffer::FrameBuffer()
 {
-	auto window = Application::Get().GetWindow();
+	auto window = Application::Get().GetActiveWindow();
 
 	m_Width = window->GetWidth();
 	m_Height = window->GetHeight();

@@ -22,7 +22,7 @@ void TextCentered(const std::string& text)
 
 	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
 	ImGui::SetCursorPosY((windowHeight - textHeight) * 0.5f);
-	ImGui::Button(text.c_str());
+	ImGui::TextWrapped(text.c_str());
 
 	ImGui::PopFont();
 }
@@ -47,7 +47,7 @@ void ViewportPanel::DrawUI()
 
 			if (ImGui::IsWindowHovered())
 			{
-				auto window = Application::Get().GetWindow();
+				auto window = Application::Get().GetActiveWindow();
 				auto width = window->GetWidth();
 				auto height = window->GetHeight();
 
@@ -114,8 +114,8 @@ void ShaderEditorPanel::DrawUI()
 			if (m_FragmentSrc != Renderer::GetRenderer()->GetShader()->GetFragmentSource())
 			{
 				m_Saved = false;
-				if (Application::Get().GetWindow()->GetTitle().find('*') == std::string::npos)
-					Application::Get().GetWindow()->SetTitle(Application::Get().GetWindow()->GetTitle() + '*');
+				if (Application::Get().GetActiveWindow()->GetTitle().find('*') == std::string::npos)
+					Application::Get().GetActiveWindow()->SetTitle(Application::Get().GetActiveWindow()->GetTitle() + '*');
 
 				if (Application::Get().GetSettings()->autoSaving)
 					Application::Get().WriteToTempFile(m_Filename + ' ' + m_FragmentSrc);
@@ -218,7 +218,7 @@ void MenuBarPanel::DrawUI()
 			}
 
 			ImGui::Separator();
-			if (ImGui::MenuItem("Close File", "Shift+C", nullptr, activeShader.get()))
+			if (ImGui::MenuItem("Close File", "Ctrl+W", nullptr, activeShader.get()))
 			{
 				if (shaderEditorPanel->IsSaved())
 					applicationInstance.CloseFile();
@@ -612,8 +612,8 @@ void AboutPanel::DrawUI()
 
 	if (ImGui::BeginPopupModal("About", &m_Active, m_WindowFlags))
 	{
-		ImGui::SetWindowSize({ 400, 200 });
-		ImGui::TextWrapped("zxShaderViz - v1.0.0 Alpha Release\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev\nNotManyIdeasDev\nmeepu-m0rpu");
+		ImGui::SetWindowSize({ 400, 300 });
+		ImGui::TextWrapped("%s - %s%s", __name__, __version__, "\n\nThanks for downloading!\nMade by ZeXo Entertainment.\n\nDevelopers:\nCiridev\nNotManyIdeasDev\nmeep-m0rp");
 
 		ImGui::EndPopup();
 	}
@@ -658,21 +658,34 @@ void SolutionWizardPanel::DrawUI()
 		ImGui::Begin("Selection Wizard", nullptr, m_WindowFlags);
 		ImGui::SetCursorPosX(500 / 4 - 30);
 		ImGui::SetCursorPosY(80.0f);
-		ImGui::BeginChild("Type Selection", { 500, 300 }, true);
+		ImGui::BeginChild("Type Selection", { 500, 343 }, true);
 
-		int i = ImGui::GetWindowSize().x;
-		ImGui::SetCursorPosY(7.5f);
-		if (ImGui::Button("Blank Solution", { 500, 85 })) m_Mode = 0;
-		if (ImGui::Button("Shader Tutorial", { 500, 85 })) m_Mode = 1;
-		if (ImGui::Button("Texture Tutorial", { 500, 85 })) m_Mode = 2;
+		/*
+		
+		Button Size: 
 
-		std::string env = Environment::GetHomePath();
+		h = 343 : Child Window Size
+		n = 3	: Number of buttons 
+		s = 5	: Spacing between buttons 
+
+		button height size ~= (h - (n - 1) * s) / n
+
+		Pre-computing the button height size gives 111, however in the case of 3 buttons
+		this process leaves 2 additional pixels, thus I split the remainder in half and
+		summed the result to the 1st and 3rd buttons, so that I removed the remainder 
+		and still managed to have 3 buttons roughly the same size. 
+
+		*/
+
+		if (ImGui::Button("Blank Solution", { 500, 112 })) m_Mode = 0; 
+		if (ImGui::Button("Shader Tutorial", { 500, 111 })) m_Mode = 1;
+		if (ImGui::Button("Texture Tutorial", { 500, 112 })) m_Mode = 2;
 
 		ImGui::EndChild();
 		ImGui::SetCursorPosX(500 / 4 - 30);
-		ImGui::InputText("##Path", (char*)env.c_str(), env.size(), ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputText("##Path", (char*)m_EnvironmentPath.c_str(), m_EnvironmentPath.size(), ImGuiInputTextFlags_ReadOnly);
 		ImGui::SameLine();
-		if(ImGui::Button("...", {38, 26}));
+		if (ImGui::Button("...", { 38, 26 })) m_EnvironmentPath = FileDialogs::BrowseForFolder("Select a Folder", m_EnvironmentPath);
 
 		ImGui::End();
 		break;

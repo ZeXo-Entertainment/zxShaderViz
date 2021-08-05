@@ -6,6 +6,7 @@
 #include "FrameBuffer.h"
 #include "Utils/TimeStep.h"
 #include "Utils/FileDialogs.h"
+#include "Utils/Utility.h"
 
 template<typename T>
 T* GetPanel(const std::string& name)
@@ -50,10 +51,10 @@ void Application::RenderLoop()
 
 	while (m_Running)
 	{
-		m_Window->Update();
-		if (m_Minimized || !m_Window->IsActive()) continue;
+		m_ActiveWindow->Update();
+		if (m_Minimized || !m_ActiveWindow->IsActive()) continue;
 
-		m_Window->Clear();
+		m_ActiveWindow->Clear();
 		ts.Update();
 
 		viewport->SetFrameBuffer(m_Renderer->m_FrameBuffer);
@@ -67,7 +68,7 @@ void Application::RenderLoop()
 		if (!m_Renderer->m_ActiveShader) continue;
 
 		if(shaderEditorPanel->IsSaved())
-			m_Window->SetTitle("zxShaderViz | " + m_Renderer->GetShader()->GetFilepath());
+			m_ActiveWindow->SetTitle("zxShaderViz | " + m_Renderer->GetShader()->GetFilepath());
 
 		m_Renderer->m_ActiveShader->SetUniform(m_Settings->uResolutionName, viewport->GetViewportSize());
 		m_Renderer->m_ActiveShader->SetUniform(m_Settings->uMousePositionName, viewport->GetMousePos());
@@ -81,7 +82,8 @@ void Application::RenderLoop()
 		std::filesystem::remove(m_Settings->tempFilepath == "" ? "tempFile.tmp" : m_Settings->tempFilepath);
 
 	m_Renderer->DeleteShaderCache();
-	m_Window->Close();
+	m_ActiveWindow->Close();
+	m_ActiveWindow.reset();
 }
 
 Application& Application::Get()
@@ -97,7 +99,7 @@ void Application::NewFile()
 	shaderEditorPanel->SetFilename("untitled.frag");
 	shaderEditorPanel->Save(false);
 	m_Renderer->m_ActiveShader = nullptr;
-	m_Window->SetTitle("zxShaderViz | " + shaderEditorPanel->GetFilename() + '*');
+	m_ActiveWindow->SetTitle("zxShaderViz | " + shaderEditorPanel->GetFilename() + '*');
 }
 
 void Application::OpenFile(const std::string& filepath, bool recache)
@@ -109,7 +111,7 @@ void Application::OpenFile(const std::string& filepath, bool recache)
 		if (!shaderEditorPanel->IsSaved())
 			shaderEditorPanel->Save();
 
-		m_Window->SetTitle("zxShaderViz | " + filepath);
+		m_ActiveWindow->SetTitle("zxShaderViz | " + filepath);
  		shaderEditorPanel->SetFragSource(shader->GetFragmentSource());		
 		shaderEditorPanel->SetFilename(filepath);
 		m_Renderer->m_FrameBuffer->Invalidate();
@@ -158,7 +160,7 @@ void Application::CloseFile()
 	shaderEditorPanel->SetFilename("");
 	m_Renderer->m_ActiveShader = nullptr;
 	shaderEditorPanel->Save(true);
-	m_Window->SetTitle("zxShaderViz");
+	m_ActiveWindow->SetTitle("zxShaderViz");
 }
 
 void Application::RestoreFile()
@@ -270,12 +272,12 @@ bool Application::Init()
 
 	if (OpenSelectionWindow() == -1) return false;
 
-	m_Window = std::make_shared<Window>(windowSettings);
-	m_Window->SetEventCallbackProcedure(BIND_FUNCTION(&Application::OnEvent, this));
-	m_ImGuiFrame = std::make_unique<ImGuiPanel>(m_Window);
+	m_ActiveWindow = std::make_shared<Window>(windowSettings);
+	m_ActiveWindow->SetEventCallbackProcedure(BIND_FUNCTION(&Application::OnEvent, this));
+	m_ImGuiFrame = std::make_unique<ImGuiPanel>(m_ActiveWindow);
 	m_Renderer = Renderer::GetRenderer();
-	m_Minimized = (m_Window->GetWidth() == 0 && m_Window->GetHeight() == 0);
-	m_Running = m_Window->IsActive();
+	m_Minimized = (m_ActiveWindow->GetWidth() == 0 && m_ActiveWindow->GetHeight() == 0);
+	m_Running = m_ActiveWindow->IsActive();
 
 	auto editorPreferences = new EditorPreferencesPanel("Editor Preferences");
 	auto updateChanges = new UpdateChangesPanel("Update Changes");
@@ -389,9 +391,9 @@ int Application::OpenSelectionWindow()
 {
 	static bool windowRunning = true;
 
-	auto window = std::shared_ptr<Window>(new Window({700, 500, 200, 200, RefreshRate::Free}));
-	window->SetWindowLimits(700.0f, 500.0f, 700.0f, 500.0f);
-	window->SetEventCallbackProcedure([](Event& e) -> void {
+	m_ActiveWindow = std::shared_ptr<Window>(new Window({700, 500, 200, 200, RefreshRate::Free}, "Solution Wizard Window"));
+	m_ActiveWindow->SetWindowLimits(700.0f, 500.0f, 700.0f, 500.0f);
+	m_ActiveWindow->SetEventCallbackProcedure([](Event& e) -> void {
 		EventDispatcher dispatcher(e);
 		dispatcher.Emit<WindowClosed>([](WindowClosed& e) -> bool {
 			windowRunning = false;
@@ -399,15 +401,15 @@ int Application::OpenSelectionWindow()
 		});
 	});
 
-	ImGuiPanel* IGPanel = new ImGuiPanel(window);
+	ImGuiPanel* IGPanel = new ImGuiPanel(m_ActiveWindow);
 	DemoPanel* demo = new DemoPanel("");
 	SolutionWizardPanel* wizard = new SolutionWizardPanel("Wizard");
 
 	while (windowRunning)
 	{
-		window->Update();
-		if (!window->IsActive()) continue;
-		window->Clear();
+		m_ActiveWindow->Update();
+		if (!m_ActiveWindow->IsActive()) continue;
+		m_ActiveWindow->Clear();
 
 		IGPanel->Begin();
 		demo->DrawUI();  
@@ -423,14 +425,15 @@ int Application::OpenSelectionWindow()
 			wizard->ChangeMenu(1);
 			break;
 		case 2: 
-			OpenSolution(FileDialogs::OpenFile("ZeXo Solution File (*.zxsln)\0 * .zxsln\0", window));
+			OpenSolution(FileDialogs::OpenFile("ZeXo Solution File (*.zxsln)\0 * .zxsln\0"));
 			windowRunning = false;
 			break;
 		}
 	}
 
 	IGPanel->Finalize();
-	window->Close();
+	m_ActiveWindow->Close();
+	m_ActiveWindow.reset();
 
 	return wizard->GetSelectedMode();
 }
@@ -441,7 +444,11 @@ void Application::WriteToConfigFile()
 
 	// Config
 	{
-		emitter << YAML::Comment("zxShaderViz - v1.1.0 Alpha");
+		std::string version = __name__;
+		version += " - ";
+		version += __version__;
+
+		emitter << YAML::Comment(version);
 		emitter << YAML::BeginMap;
 
 		// Engine settings
@@ -494,15 +501,15 @@ void Application::WriteToConfigFile()
 			std::vector<int> wPos = { 0, 30 };
 			RefreshRate rr = RefreshRate::Free;
 
-			if (m_Window)
+			if (m_ActiveWindow)
 			{
-				wSize[0] = m_Window->GetWidth();
-				wSize[1] = m_Window->GetHeight();
+				wSize[0] = m_ActiveWindow->GetWidth();
+				wSize[1] = m_ActiveWindow->GetHeight();
 
-				wPos[0] = m_Window->GetPosX();
-				wPos[1] = std::max(m_Window->GetPosY(), 30u);
+				wPos[0] = m_ActiveWindow->GetPosX();
+				wPos[1] = std::max(m_ActiveWindow->GetPosY(), 30u);
 
-				rr = m_Window->GetRefreshRate();
+				rr = m_ActiveWindow->GetRefreshRate();
 			}
 
 			emitter << YAML::BeginMap;

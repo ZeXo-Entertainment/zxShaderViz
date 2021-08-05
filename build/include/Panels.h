@@ -4,6 +4,7 @@
 #include <Renderer.h>
 
 #include "Events/Event.h"
+#include "Utils/Utility.h"
 
 class UIPanel
 {
@@ -190,7 +191,7 @@ public:
 		m_Mode = -1;
 		m_Menu = 0;
 
-		m_Selection = { false, false, false };
+		m_EnvironmentPath = Environment::GetHomePath();
 	}
 
 	void ChangeMenu(int menu) { m_Menu = menu; }
@@ -200,7 +201,7 @@ public:
 	virtual void OnEvent(Event& e) {}
 
 private:
-	std::array<bool, 3> m_Selection;
+	std::string m_EnvironmentPath;
 
 	int m_Mode;
 	int m_Menu;
